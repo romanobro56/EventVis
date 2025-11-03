@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 pymongo
+requests 
 beautifulsoup4
 feedparser
 
