@@ -1,0 +1,61 @@
+project-name/
+│
+├── public/
+│   ├── favicon.ico
+│   └── assets/
+│       └── (later: SVGs, logos, map icons)
+│
+├── src/
+│   ├── components/
+│   │   ├── Header.jsx
+│   │   ├── Footer.jsx
+│   │   ├── EventCard.jsx
+│   │   ├── SearchBar.jsx
+│   │   └── ParallaxBackground.jsx
+│   │
+│   ├── pages/
+│   │   ├── Home.jsx          # Main list view (with parallax + events)
+│   │   ├── MapView.jsx       # Leaflet map
+│   │   └── Account.jsx       # User account page
+│   │
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+│
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+└── vite.config.js
+
+##DEPENDENCIES
+npm install react-router-dom leaflet react-leaflet
+npm install -D tailwindcss postcss autoprefixer
+npm install --save-dev vite
+npm install react react-dom
+npm install --save-dev @vitejs/plugin-react
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.6/install.sh | bash
+npm install tailwindcss@3.4.14 --save-dev
+
+## venv activation
+source venv/bin/activate
+
+
+
+// background scroll for main list view - parallax effect with cool svg 
+// map view page
+// main search page will include a search bar, with options for filtering stuff by date, price
+// each event will be in a frame containing info about the event and should be clickable to explore the details in depth
+// personal account page
+// end of page willl have info for customer support like to sontavct teh site owners to report any issues
+// the event int heir boxes will not have hard line to indicate hte end of the boxed but wil be a softer shawdy like effect 
+
+1. searching algo for events
+2. comments logged with usernames
+3. how to close an event card
+4. scrolling within event card
+5. any links within event card
+
+// FIXES
+1. all events in a row expand when i click on one event in a row. i want each event to open individually on being clicked 
+- clicking the event box again should close the event
+- there should be a small X indicating close the expanded view option for each event.
