@@ -3,3 +3,6 @@ __pycache__/
 
 # Virtual environment
 .venv/
+
+# Public and secret keys
+backend/app/unique_keys.py

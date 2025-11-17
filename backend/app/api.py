@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from clerk_backend_api import Clerk, Session
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from unique_keys import CLERK_SECRET_KEY
 
 app = FastAPI()
 
@@ -15,8 +16,8 @@ origins = [
 
 load_dotenv()
 
-# I don't know how to get a Clerk API Key yet.
-clerk = Clerk(api_key=os.getenv("CLERK_API_KEY"))
+# I don't know if I'm getting a Clerk API Key correctly.
+clerk = Clerk(bearer_auth=os.getenv(CLERK_SECRET_KEY))
 
 app.add_middleware(
     CORSMiddleware,
