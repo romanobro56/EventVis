@@ -1,13 +1,22 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
+from clerk_backend_api import Clerk, Session
+from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
+
+from dotenv import load_dotenv
 
 origins = [
     "http://localhost:5173",
     "localhost:5173"
 ]
 
+load_dotenv()
+
+# I don't know how to get a Clerk API Key yet.
+clerk = Clerk(api_key=os.getenv("CLERK_API_KEY"))
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,6 +25,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+# I'm assuming this is akin to the "access denied" page for non-logged-in users.
+@app.get("/protected")
+async def protected(req: Request):
+    # Get the session token...
+    authorizationHeader = req.headers.get("Authorization")
+    if not authorizationHeader or not authorizationHeader.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="The Authorization Header is missing or invalid.")
+    
+    sessionToken = authorizationHeader.split(" ")[1]
+
+    # Use Clerk's API to verify this token...
+    try:
+        session: Session = Clerk.authenticate_request(clerk, req)
+        if not session:
+            raise HTTPException(status_code=401, detail="The Session is invalid.")
+    except Exception as exc:
+        raise HTTPException(status_code=401, detail=str(exc))
+
+@app.get("/public")
+async def public():
+    return {"message": "Welcome to EventVis! Don't forget to sign in or sign up!"}
 
 
 """
