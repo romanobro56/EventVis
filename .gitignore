@@ -7,3 +7,6 @@ __pycache__/
 # Public and secret keys
 backend/app/unique_keys.py
 backend/.env
+
+# MongoDB Playgrounds
+playground-1.mongodb.js

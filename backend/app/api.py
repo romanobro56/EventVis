@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from clerk_backend_api import Clerk, Session
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from starlette.responses import FileResponse
+from pathlib import Path
 
 app = FastAPI()
 
@@ -48,6 +50,14 @@ async def protected(req: Request):
 async def public():
     return {"message": "Welcome to EventVis! Don't forget to sign in or sign up!"}
 
+@app.get("/")
+async def index():
+    # This assumes you're running the server from the "EventVis" root folder.
+    finalPath = Path.cwd() / "frontend" / "index.html"
+
+    return FileResponse(finalPath)
+
+# What we need: Login system that puts username & password to MongoDB
 
 """
 Each of these is a routing method;
