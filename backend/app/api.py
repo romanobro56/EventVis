@@ -32,6 +32,9 @@ class Event(BaseModel):
     # comments: list
     # is_private: bool
 
+DUMMY_EVENT = Event(id=0, title="title", description="description", location="location",
+                    start_time="start_time", end_time="end_time", created_by="created_by")
+
 """
 Create event
 """
@@ -59,7 +62,7 @@ Get event details
 """
 @app.get("/events/{event_id}")
 def get_event(event_id: int):
-    return Event(0, "title", "description", "location", "start_time", "end_time", "created_by")
+    return DUMMY_EVENT
 
 """
 RSVP for event
@@ -90,7 +93,7 @@ Arguments: search_text, tags, user_location, radius, time
 @app.get("/events")
 # can add other search parameters like tags, location, etc
 def search_for_events(search_text: str):
-    return [Event(0, "title", "description", "location", "start_time", "end_time", "created_by")]
+    return [DUMMY_EVENT]
 
 @app.get("/settings/")
 def get_user_preferences(user_id: int):
