@@ -6,7 +6,7 @@ class User:
     user_id: str
     name: str
     email: str
-    hash: bytes # Not sure if this is the right data type.
+    password_hash: bytes # Not sure if this is the right data type.
 
 # I'm not sure if we need separate JavaScript classes for these data types:
 class Event:
