@@ -4,9 +4,10 @@ __pycache__/
 # Virtual environment
 .venv/
 
-# Public and secret keys
+# Environment Variables
 backend/app/unique_keys.py
 backend/.env
+db/.env
 
 # MongoDB Playgrounds
 playground-1.mongodb.js
