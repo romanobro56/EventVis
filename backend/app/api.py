@@ -5,6 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from starlette.responses import FileResponse
 from pathlib import Path
+import hashlib
+from __init__ import *
+import random
 
 app = FastAPI()
 
@@ -27,6 +30,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+# Create an account using data from the arguments. The parameters may need to be changed.
+def create_account(password: str, name: str, email: str) -> User:
+    hashValue = hashlib.sha3_256(password.encode())
+
+    # This is a temporary way to make a user ID that is unlikely to lead to collisions.
+    user_id: int = random.randbytes(1) ** random.randbytes(1)
+
+    # Still need to figure out how to send this to MongoDB later...
+    return User(user_id, name, email, hashValue)
+
+    # TODO: Consider duplicate emails.
+
+# Attempt to log in with the user's data. This likely needs to change, too.
+def attempt_login(email: str, password: str):
+    # It's unlikely for an incorrect password to get accepted because it shared the correct SHA-3 hash.
+    hashValue = hashlib.sha3_256(password.encode())
+
+    # I think we need to send the email and hashValue variables to MongoDB to check for a database?
 
 # I'm assuming this is akin to the "access denied" page for non-logged-in users.
 @app.get("/protected")
