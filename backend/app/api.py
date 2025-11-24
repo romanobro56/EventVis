@@ -17,23 +17,60 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+# this schema is used by the front-end
 class Event(BaseModel):
     id: int
     title: str
+    date: str
     description: str
-    # use a different type for locations?
-    location: str
-    # use a different type for dates / times?
+    full_description: str
     start_time: str
     end_time: str
-    # make this a user / user id instead?
-    created_by: str
-    # invited_users: list
-    # comments: list
-    # is_private: bool
+    location: str
+    lat: float
+    lng: float
 
-DUMMY_EVENT = Event(id=0, title="title", description="description", location="location",
-                    start_time="start_time", end_time="end_time", created_by="created_by")
+# latitudes and longitudes are probably wrong
+DUMMY_EVENTS = [
+  Event(
+    id=1,
+    title="Farmers Market",
+    date="Nov 10",
+    description="Local produce and crafts",
+    full_description="Come enjoy fresh local produce, crafts, and music at the farmers market!",
+    start_time="09:00",
+    end_time="15:00",
+    location="Central Park",
+    lat=42.3736,
+    lng=-72.5199,
+  ),
+  Event(
+    id=2,
+    title="Art in the Park",
+    date="Nov 12",
+    description="Outdoor art showcase",
+    full_description="Experience local artists showcasing their work in a beautiful outdoor setting.",
+    start_time="11:00",
+    end_time="17:00",
+    location="Riverside Park",
+    lat=42.376,
+    lng=-72.52,
+  ),
+  Event(
+    id=3,
+    title="Food Festival",
+    date="Nov 15",
+    description="Tasty eats and live music",
+    full_description="Sample cuisines from around the world while enjoying live performances.",
+    start_time="12:00",
+    end_time="20:00",
+    location="Downtown Square",
+    lat=42.375,
+    lng=-72.520
+  ),
+]
+
+DUMMY_EVENT = DUMMY_EVENTS[0]
 
 """
 Create event
@@ -93,7 +130,7 @@ Arguments: search_text, tags, user_location, radius, time
 @app.get("/events")
 # can add other search parameters like tags, location, etc
 def search_for_events(search_text: str):
-    return [DUMMY_EVENT]
+    return DUMMY_EVENTS
 
 @app.get("/settings/")
 def get_user_preferences(user_id: int):
