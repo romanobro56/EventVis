@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    "localhost:5173"
+    "localhost:5173",
 ]
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,40 +17,121 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+# this schema is used by the front-end
+class Event(BaseModel):
+    id: int
+    title: str
+    date: str
+    description: str
+    full_description: str
+    start_time: str
+    end_time: str
+    location: str
+    lat: float
+    lng: float
+
+# latitudes and longitudes are probably wrong
+DUMMY_EVENTS = [
+  Event(
+    id=1,
+    title="Farmers Market",
+    date="Nov 10",
+    description="Local produce and crafts",
+    full_description="Come enjoy fresh local produce, crafts, and music at the farmers market!",
+    start_time="09:00",
+    end_time="15:00",
+    location="Central Park",
+    lat=42.3736,
+    lng=-72.5199,
+  ),
+  Event(
+    id=2,
+    title="Art in the Park",
+    date="Nov 12",
+    description="Outdoor art showcase",
+    full_description="Experience local artists showcasing their work in a beautiful outdoor setting.",
+    start_time="11:00",
+    end_time="17:00",
+    location="Riverside Park",
+    lat=42.376,
+    lng=-72.52,
+  ),
+  Event(
+    id=3,
+    title="Food Festival",
+    date="Nov 15",
+    description="Tasty eats and live music",
+    full_description="Sample cuisines from around the world while enjoying live performances.",
+    start_time="12:00",
+    end_time="20:00",
+    location="Downtown Square",
+    lat=42.375,
+    lng=-72.520
+  ),
+]
+
+DUMMY_EVENT = DUMMY_EVENTS[0]
 
 """
-Each of these is a routing method;
-There's one for the list view and the map view,
-and I added one for specific events and user profile views.
-
-Returns and types are just there for convenience and don't mean anything.
-You can change those once this is actually implemented.
+Create event
 """
-@app.get("/map/")
-def read_root():
-    return {"Hello": "World"}
-
-@app.get("/list/")
-def read_item():
-    return {"list": "list"}
-
-@app.get("/event/{event_id}")
-def get_event(event_id):
-    return {"event": event_id}
-
-@app.get("/user/{user_id}")
-def get_user(user_id):
-    return {"user": user_id}
+@app.post("/events")
+def create_event(event: Event):
+    # returns id of created event
+    return 0
 
 """
-These are utilities, like setting and posting for actually creating an event.
-This could probably be its own file, too.
+Edit event
 """
+@app.put("/events/{event_id}")
+def edit_event(event_id: int, new_event: Event):
+    return
 
-@app.post("/event/{event_id}")
-def create_event(event_id):
-    return {"event_created": event_id}
+"""
+Cancel event
+"""
+@app.put("/events/{event_id}/cancel")
+def cancel_event(event_id: int):
+    return
+
+"""
+Get event details
+"""
+@app.get("/events/{event_id}")
+def get_event(event_id: int):
+    return DUMMY_EVENT
+
+"""
+RSVP for event
+"""
+@app.put("/events/{event_id}/rsvp")
+def rsvp_for_event(event_id: int):
+    return
+
+"""
+Un-RSVP for event
+"""
+@app.put("/events/{event_id}/unrsvp")
+def unrsvp_for_event(event_id: int):
+    return
+
+"""
+Comment on event
+"""
+@app.post("/events/{event_id}/comments")
+def comment_on_event(event_id: int, comment_text: str):
+    # returns id of new comment
+    return 0
+
+"""
+Search for events
+Arguments: search_text, tags, user_location, radius, time
+"""
+@app.get("/events")
+# can add other search parameters like tags, location, etc
+def search_for_events(search_text: str):
+    return DUMMY_EVENTS
 
 @app.get("/settings/")
-def get_user_preferences(user_id):
+def get_user_preferences(user_id: int):
     return {"user_id": user_id}
