@@ -1,4 +1,5 @@
 import uvicorn
+from app import api
 
 # this is a stub that serves as the entry point for the module
 # defines the port, ip host, and reload settings

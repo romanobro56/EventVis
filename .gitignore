@@ -4,4 +4,16 @@ __pycache__/
 # Virtual environment
 .venv/
 
+# Environment Variables
+backend/app/unique_keys.py
+backend/.env
+db/.env
+
+# MongoDB Playgrounds
+playground-1.mongodb.js
+
+# Node Modules
+node_modules/
+
+# Package Locks
 frontend/package-lock.json

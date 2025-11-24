@@ -4,4 +4,5 @@ pymongo
 requests 
 beautifulsoup4
 feedparser
-
+clerk-backend-api
+python-dotenv
