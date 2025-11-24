@@ -11,3 +11,6 @@ db/.env
 
 # MongoDB Playgrounds
 playground-1.mongodb.js
+
+# Node Modules
+node_modules/
