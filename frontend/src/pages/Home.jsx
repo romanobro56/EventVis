@@ -1,45 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ParallaxBackground from "../components/ParallaxBackground";
 import SearchBar from "../components/SearchBar";
 import EventCard from "../components/EventCard";
-
-// Dummy event data
-const dummyEvents = [
-  {
-    event_id: 1,
-    title: "Farmers Market",
-    date: "Nov 10",
-    description: "Local produce and crafts",
-    fullDescription: "Come enjoy fresh local produce, crafts, and music at the farmers market!",
-    start_time: "09:00",
-    end_time: "15:00",
-    location: "Central Park",
-  },
-  {
-    event_id: 2,
-    title: "Art in the Park",
-    date: "Nov 12",
-    description: "Outdoor art showcase",
-    fullDescription: "Experience local artists showcasing their work in a beautiful outdoor setting.",
-    start_time: "11:00",
-    end_time: "17:00",
-    location: "Riverside Park",
-  },
-  {
-    event_id: 3,
-    title: "Food Festival",
-    date: "Nov 15",
-    description: "Tasty eats and live music",
-    fullDescription: "Sample cuisines from around the world while enjoying live performances.",
-    start_time: "12:00",
-    end_time: "20:00",
-    location: "Downtown Square",
-  },
-];
+import { fetchEvents } from "../api";
 
 export default function Home() {
-  const [events] = useState(dummyEvents);
+  const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState(events);
+
+  useEffect(() => {
+    (async () => {
+      const data = await fetchEvents();
+      setEvents(data);
+      setFilteredEvents(data);
+    })();
+  }, []);
 
   // Frontend search
   const handleSearch = (query, filter) => {
@@ -59,7 +34,7 @@ export default function Home() {
         <div className="grid sm:grid-cols-2 gap-6">
           {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (
-              <EventCard key={event.event_id} event={event} />
+              <EventCard key={event.id} event={event} />
             ))
           ) : (
             <p className="text-gray-600 col-span-full text-center">
