@@ -39,7 +39,7 @@ export default function EventCard({ event }) {
       {/* Expanded Details */}
       {expanded && (
         <div className="mt-4 border-t border-gray-300 pt-4 space-y-2">
-          <p className="text-gray-800">{event.fullDescription}</p>
+          <p className="text-gray-800">{event.full_description}</p>
           <p className="text-sm text-gray-600">
             <strong>Time:</strong> {event.start_time} - {event.end_time}
           </p>
@@ -48,7 +48,7 @@ export default function EventCard({ event }) {
           </p>
 
           {/* Comment Section */}
-          <CommentSection eventId={event.event_id} />
+          <CommentSection eventId={event.id} />
         </div>
       )}
     </div>
