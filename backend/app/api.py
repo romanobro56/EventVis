@@ -149,7 +149,10 @@ Create event
 """
 @app.post("/events")
 def create_event(event: Event):
-    # returns id of created event
+    # MongoDB API call to make a new event in the database
+    create_new_event(str(JSONResponse(content=jsonable_encoder(event))))
+
+    # returns id of created event (We have not set up event ID disambiguation yet.)
     return 0
 
 """
