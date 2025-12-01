@@ -1,13 +1,42 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-export default function Header() {
+export default function Header({ user }) {
+  const location = useLocation();
+
   return (
-    <header className="bg-white/70 backdrop-blur-md shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
-      <h1 className="text-2xl font-bold text-green-800">EventFinder</h1>
-      <nav className="space-x-6">
-        <Link to="/" className="hover:text-green-700">Home</Link>
-        <Link to="/map" className="hover:text-green-700">Map</Link>
-        <Link to="/account" className="hover:text-green-700">Account</Link>
+    <header className="p-4 bg-green-700 text-white flex justify-between items-center">
+      <h1 className="text-xl font-bold">EventVis</h1>
+
+      <nav className="flex gap-4">
+
+        {/* Hide Home link when already on Home */}
+        {location.pathname !== "/" && <Link to="/">Home</Link>}
+
+        {/* Hide Map link when already on Map */}
+        {location.pathname !== "/map" && <Link to="/map">Map</Link>}
+
+        {!user ? (
+          <>
+            {/* Only show Login if not already on Login page */}
+            {location.pathname !== "/account" && <Link to="/account">Login</Link>}
+
+            {/* 🚫 NEVER show Sign Up link — removed permanently */}
+
+          </>
+        ) : (
+          <>
+            <span>Welcome, {user.name}!</span>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+              className="bg-white text-green-700 px-3 py-1 rounded"
+            >
+              Logout
+            </button>
+          </>
+        )}
       </nav>
     </header>
   );

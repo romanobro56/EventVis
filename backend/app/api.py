@@ -1,27 +1,59 @@
-from fastapi import FastAPI, Request, HTTPException, Depends, Query
+# app/api.py
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from clerk_backend_api import Clerk, Session
-import os
-from starlette.responses import FileResponse
-from pathlib import Path
-import hashlib
-from __init__ import *
-import random
-from pydantic import BaseModel
+
+from app.routers import users, events, public
 
 app = FastAPI()
 
-from dotenv import load_dotenv
+origins = ["http://localhost:5173", "localhost:5173"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(users.router)
+app.include_router(events.router)
+app.include_router(public.router)
+
+if __name__ == "__main__":
+    for route in app.routes:
+        print(f"Path: {route.path} | Methods: {route.methods} | Name: {route.name}")
+
+
+
+
+"""from fastapi import FastAPI, Request, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import FileResponse
+from pathlib import Path
+from pydantic import BaseModel
+from datetime import datetime
+import hashlib
+import secrets
+from bson.objectid import ObjectId
+
+# Import your MongoDB client
+from db.database_client import client
+
+
+
+# --- MongoDB setup ---
+db = client["event_vis"]
+users_col = db["users"]
+
+# --- FastAPI setup ---
+app = FastAPI()
 
 origins = [
     "http://localhost:5173",
     "localhost:5173",
 ]
-
-load_dotenv()
-
-# I don't know if I'm getting a Clerk API Key correctly.
-clerk = Clerk(bearer_auth=os.getenv("CLERK_SECRET_KEY"))
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,56 +63,89 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Create an account using data from the arguments. The parameters may need to be changed.
-def create_account(password: str, name: str, email: str) -> User:
-    hashValue = hashlib.sha3_256(password.encode())
+# --- Helper functions ---
+def hash_password(password: str) -> str:
+    return hashlib.sha3_256(password.encode()).hexdigest()
 
-    # This is a temporary way to make a user ID that is unlikely to lead to collisions.
-    user_id: int = random.randbytes(1) ** random.randbytes(1)
+def create_session_token() -> str:
+    return secrets.token_hex(32)
 
-    # Still need to figure out how to send this to MongoDB later...
-    return User(user_id, name, email, hashValue)
+def find_user_by_email(email: str):
+    return users_col.find_one({"email": email})
 
-    # TODO: Consider duplicate emails.
+def find_user_by_token(token: str):
+    return users_col.find_one({"session_token": token})
 
-# Attempt to log in with the user's data. This likely needs to change, too.
-def attempt_login(email: str, password: str):
-    # It's unlikely for an incorrect password to get accepted because it shared the correct SHA-3 hash.
-    hashValue = hashlib.sha3_256(password.encode())
+# --- User models ---
+class SignupRequest(BaseModel):
+    name: str
+    email: str
+    password: str
 
-    # I think we need to send the email and hashValue variables to MongoDB to check for a database?
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
-# I'm assuming this is akin to the "access denied" page for non-logged-in users.
+# --- User endpoints ---
+@app.post("/signup")
+async def signup(data: SignupRequest):
+    if find_user_by_email(data.email):
+        raise HTTPException(status_code=409, detail="Email already in use.")
+
+    user_doc = {
+        "name": data.name,
+        "email": data.email,
+        "password_hash": hash_password(data.password),
+        "session_token": None,
+        "created_at": datetime.utcnow(),
+    }
+
+    result = users_col.insert_one(user_doc)
+    return {"success": True, "user_id": str(result.inserted_id)}
+
+@app.post("/login")
+async def login(data: LoginRequest):
+    user = find_user_by_email(data.email)
+    if not user or user["password_hash"] != hash_password(data.password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    token = create_session_token()
+    users_col.update_one({"_id": user["_id"]}, {"$set": {"session_token": token, "last_login": datetime.utcnow()}})
+
+    return {"access_token": token, "token_type": "bearer", "user_id": str(user["_id"]), "name": user["name"]}
+
 @app.get("/protected")
 async def protected(req: Request):
-    # Get the session token...
     authorizationHeader = req.headers.get("Authorization")
     if not authorizationHeader or not authorizationHeader.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="The Authorization Header is missing or invalid.")
+        raise HTTPException(status_code=401, detail="Authorization header missing or invalid.")
     
-    sessionToken = authorizationHeader.split(" ")[1]
+    token = authorizationHeader.split(" ")[1]
+    user = find_user_by_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Session is invalid or expired.")
 
-    # Use Clerk's API to verify this token...
-    try:
-        session: Session = Clerk.authenticate_request(clerk, req)
-        if not session:
-            raise HTTPException(status_code=401, detail="The Session is invalid.")
-    except Exception as exc:
-        raise HTTPException(status_code=401, detail=str(exc))
+    return {
+        "user_id": str(user["_id"]),
+        "name": user["name"],
+        "email": user["email"]
+    }
 
-@app.get("/public")
-async def public():
-    return {"message": "Welcome to EventVis! Don't forget to sign in or sign up!"}
+@app.post("/logout")
+async def logout(req: Request):
+    authorizationHeader = req.headers.get("Authorization")
+    if not authorizationHeader or not authorizationHeader.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authorization header missing or invalid.")
 
-@app.get("/")
-async def index():
-    # This assumes you're running the server from the "EventVis" root folder.
-    finalPath = Path.cwd() / "frontend" / "index.html"
+    token = authorizationHeader.split(" ")[1]
+    user = find_user_by_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token.")
 
-    return FileResponse(finalPath)
+    users_col.update_one({"_id": user["_id"]}, {"$set": {"session_token": None}})
+    return {"success": True, "message": "Logged out"}
 
-# What we need: Login system that puts username & password to MongoDB
-# this schema is used by the front-end
+# --- Event models ---
 class Event(BaseModel):
     id: int
     title: str
@@ -93,108 +158,92 @@ class Event(BaseModel):
     lat: float
     lng: float
 
-# latitudes and longitudes are probably wrong
+# Dummy events
 DUMMY_EVENTS = [
-  Event(
-    id=1,
-    title="Farmers Market",
-    date="Nov 10",
-    description="Local produce and crafts",
-    full_description="Come enjoy fresh local produce, crafts, and music at the farmers market!",
-    start_time="09:00",
-    end_time="15:00",
-    location="Central Park",
-    lat=42.3736,
-    lng=-72.5199,
-  ),
-  Event(
-    id=2,
-    title="Art in the Park",
-    date="Nov 12",
-    description="Outdoor art showcase",
-    full_description="Experience local artists showcasing their work in a beautiful outdoor setting.",
-    start_time="11:00",
-    end_time="17:00",
-    location="Riverside Park",
-    lat=42.376,
-    lng=-72.52,
-  ),
-  Event(
-    id=3,
-    title="Food Festival",
-    date="Nov 15",
-    description="Tasty eats and live music",
-    full_description="Sample cuisines from around the world while enjoying live performances.",
-    start_time="12:00",
-    end_time="20:00",
-    location="Downtown Square",
-    lat=42.375,
-    lng=-72.520
-  ),
+    Event(
+        id=1,
+        title="Farmers Market",
+        date="Nov 10",
+        description="Local produce and crafts",
+        full_description="Come enjoy fresh local produce, crafts, and music at the farmers market!",
+        start_time="09:00",
+        end_time="15:00",
+        location="Central Park",
+        lat=42.3736,
+        lng=-72.5199,
+    ),
+    Event(
+        id=2,
+        title="Art in the Park",
+        date="Nov 12",
+        description="Outdoor art showcase",
+        full_description="Experience local artists showcasing their work in a beautiful outdoor setting.",
+        start_time="11:00",
+        end_time="17:00",
+        location="Riverside Park",
+        lat=42.376,
+        lng=-72.52,
+    ),
+    Event(
+        id=3,
+        title="Food Festival",
+        date="Nov 15",
+        description="Tasty eats and live music",
+        full_description="Sample cuisines from around the world while enjoying live performances.",
+        start_time="12:00",
+        end_time="20:00",
+        location="Downtown Square",
+        lat=42.375,
+        lng=-72.520
+    ),
 ]
 
 DUMMY_EVENT = DUMMY_EVENTS[0]
 
-"""
-Create event
-"""
+# --- Event endpoints ---
 @app.post("/events")
 def create_event(event: Event):
-    # returns id of created event
     return 0
 
-"""
-Edit event
-"""
 @app.put("/events/{event_id}")
 def edit_event(event_id: int, new_event: Event):
     return
 
-"""
-Cancel event
-"""
 @app.put("/events/{event_id}/cancel")
 def cancel_event(event_id: int):
     return
 
-"""
-Get event details
-"""
 @app.get("/events/{event_id}")
 def get_event(event_id: int):
     return DUMMY_EVENT
 
-"""
-RSVP for event
-"""
 @app.put("/events/{event_id}/rsvp")
 def rsvp_for_event(event_id: int):
     return
 
-"""
-Un-RSVP for event
-"""
 @app.put("/events/{event_id}/unrsvp")
 def unrsvp_for_event(event_id: int):
     return
 
-"""
-Comment on event
-"""
 @app.post("/events/{event_id}/comments")
 def comment_on_event(event_id: int, comment_text: str):
-    # returns id of new comment
     return 0
 
-"""
-Search for events
-Arguments: search_text, tags, user_location, radius, time
-"""
 @app.get("/events")
-# can add other search parameters like tags, location, etc
 def search_for_events(search_text: str):
     return DUMMY_EVENTS
 
 @app.get("/settings/")
 def get_user_preferences(user_id: int):
     return {"user_id": user_id}
+
+# --- Public endpoint ---
+@app.get("/public")
+async def public():
+    return {"message": "Welcome to EventVis! Don't forget to sign in or sign up!"}
+
+@app.get("/")
+async def index():
+    finalPath = Path.cwd() / "frontend" / "index.html"
+    return FileResponse(finalPath)
+"""
