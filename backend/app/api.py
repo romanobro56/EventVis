@@ -208,6 +208,10 @@ Arguments: search_text, tags, user_location, radius, time
 @app.get("/events")
 # can add other search parameters like tags, location, etc
 def search_for_events(search_text: str):
+    # I'm assuming this uses `get_events()`.
+    allEvents_json = get_events(search_text)
+    allEvents_dict = json.loads(allEvents_json)
+    # Analyze these variables during testing to determine what to do next.
     return DUMMY_EVENTS
 
 @app.get("/settings/")
