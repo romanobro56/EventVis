@@ -8,6 +8,7 @@ import hashlib
 from __init__ import *
 import random
 from pydantic import BaseModel
+from db.database_client import * # This may require changing a Python path.
 
 app = FastAPI()
 
@@ -38,7 +39,9 @@ def create_account(password: str, name: str, email: str) -> User:
     # This is a temporary way to make a user ID that is unlikely to lead to collisions.
     user_id: int = random.randbytes(1) ** random.randbytes(1)
 
-    # Still need to figure out how to send this to MongoDB later...
+    # Send the data to MongoDB via the API calls.
+
+    # Return (if needed)
     return User(user_id, name, email, hashValue)
 
     # TODO: Consider duplicate emails.
