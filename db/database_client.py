@@ -1,4 +1,7 @@
 
+import bson
+import json
+
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import ConnectionFailure
@@ -13,21 +16,20 @@ password = os.environ.get('PASS')
 
 #generate the connection string
 uri = f"mongodb+srv://{username}:{password}@eventviscluster.dpmc4qx.mongodb.net/?appName=EventVisCluster"
+client = MongoClient(uri, server_api=ServerApi('1'))
 
-def connect_cluster():
-    # Create a new client and connect to the server
-    try:
-        client = MongoClient(uri, server_api=ServerApi('1'))
-    except ConnectionFailure as e:
-        return e
-    return client
-    
-def close_connection(client):
-    
-    return
+#get the EventVis database from the cluster
+db = client['event_vis']
 
+#get the collections for each object type
+user_collection = db['users']
+comment_collection = db['comments']
+event_collection = db['events']
+
+#need to add validation to these, but they work for now!
 def create_user(user: str):
-    #TODO
+    user_dict = json.loads(str)
+    user_collection.insert_one(user_dict)
     return
 
 def update_events_campus_pulse():
@@ -37,22 +39,41 @@ def update_events_calendar():
     return
 
 def create_new_event(event: str):
-    #TODO
+    event_dict = json.loads(str)
+    event_collection.insert_one(event_dict)
     return
    
 
 def delete_event(event: str):
-    #TODO
+    event_dict = json.loads(event)
+    event_collection.delete_one(event_dict)
     return
   
 
+#returns a list of JSON strings of each event that matches the query
+#assumes a JSON input, e.g. '{"name": "Bob"}'
 def get_events(query: str):
-    #TODO
-    return
-   
+    query_dict = json.loads(query)
+    event_documents = event_collection.find(query_dict)
+    output_json = []
+    for document in event_documents:
+        output_document = json.dumps(document)
+        output_json.append(output_document)
+    return output_json
 
+#Returns a list of JSON strings of every event in the database
+def get_all_events():
+    event_documents = event_collection.find()
+    output_json = []
+    for document in event_documents:
+        output_document = json.dumps(document)
+        output_json.append(output_document)
+    return output_json
+
+#deletes a user given a JSON string matching the user's document
 def delete_user(user: str):
-    #TODO
+    user_dict = json.loads(user)
+    event_collection.delete_one(user_dict)
     return
 
 
@@ -75,4 +96,4 @@ try:
 except Exception as e:
     print(e)
 
-        
+client.close()
