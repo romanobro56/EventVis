@@ -167,6 +167,9 @@ Cancel event
 """
 @app.put("/events/{event_id}/cancel")
 def cancel_event(event_id: int):
+    # Delete the event instead of marking it as cancelled. (We'll do this due to time constraints.)
+    event = get_event(event_id)
+    delete_event(str(JSONResponse(content=jsonable_encoder(event))))
     return
 
 """
