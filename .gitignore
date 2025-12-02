@@ -12,7 +12,7 @@ env/
 .venv/
 ENV/
 env.bak/
-backend/venv/*
+backend/venv/bin
 backend/venv*
 
 # Jupyter
