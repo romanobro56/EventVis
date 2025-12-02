@@ -43,3 +43,7 @@ yarn-error.log*
 .env
 *.env
 .env.*
+
+# === System-unique files ===
+backend/app/unique_keys.py
+playground-1.mongodb.js
