@@ -1,6 +1,6 @@
 # app/routers/users.py
 from fastapi import APIRouter, HTTPException, Request
-from app.db.database_client import client
+from db.database_client import client
 from app.models.user_models import SignupRequest, LoginRequest
 from datetime import datetime
 import hashlib, secrets

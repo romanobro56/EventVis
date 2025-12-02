@@ -9,8 +9,10 @@ from pymongo.errors import ConnectionFailure
 import os
 
 #set your MongoDB username and password to these environment variables
-username = os.environ.get('USRNM')
-password = os.environ.get('PASS')
+"""username = os.environ.get('USRNM')
+password = os.environ.get('PASS')"""
+username = "jtaank_db_user"
+password = "J1sm1ne31"
 
 
 
@@ -96,4 +98,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
 
-client.close()
+    client.close()
