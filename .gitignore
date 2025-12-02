@@ -1,5 +1,4 @@
 # === Python ===
-venv/
 .env
 *.pyc
 __pycache__/
@@ -12,8 +11,7 @@ env/
 .venv/
 ENV/
 env.bak/
-backend/venv/bin
-/backend/venv/
+venv/
 
 # Jupyter
 .ipynb_checkpoints/
