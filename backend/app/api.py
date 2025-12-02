@@ -23,7 +23,7 @@ origins = [
 
 load_dotenv()
 
-# I don't know if I'm getting a Clerk API Key correctly.
+# Get a Clerk API key for the authentication part.
 clerk = Clerk(bearer_auth=os.getenv("CLERK_SECRET_KEY"))
 
 app.add_middleware(
@@ -41,6 +41,7 @@ def create_account(password: str, name: str, email: str) -> User:
     # This is a temporary way to make a user ID that is unlikely to lead to collisions.
     user_id: int = random.randbytes(1) ** random.randbytes(1)
 
+    # Create the user object prematurely, and convert it to JSON.
     user_object = User(user_id, name, email, hashValue)
     user_json = JSONResponse(content=jsonable_encoder(user_object))
 
