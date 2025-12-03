@@ -6,24 +6,30 @@ import Home from "./pages/Home";
 import MapView from "./pages/MapView";
 import Account from "./pages/Account";
 import Signup from "./pages/Signup";
+import Profile from "./pages/Profile";
+import { Toaster } from "react-hot-toast";
+
+
 
 export default function App() {
   const [user, setUser] = useState(null);
 
   return (
     <BrowserRouter>
-      <Header user={user} />
+      <Toaster position="top-center" />
+      <Header user={user} setUser={setUser} />
+
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/map" element={<MapView />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/map" element={<MapView />} />
+      <Route path="/account" element={<Account setUser={setUser} />} />
+      <Route path="/signup" element={<Signup setUser={setUser} />} />
 
-        {/* Login */}
-        <Route path="/account" element={<Account setUser={setUser} />} />
+      {/* NEW: Profile Page */}
+      <Route path="/profile" element={<Profile />} />
+    </Routes>
 
-        {/* Signup */}
-        <Route path="/signup" element={<Signup setUser={setUser} />} />
-      </Routes>
 
       <Footer />
     </BrowserRouter>

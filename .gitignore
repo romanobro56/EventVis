@@ -43,3 +43,6 @@ yarn-error.log*
 .env
 *.env
 .env.*
+
+# development-only seed script
+seed_events.py
