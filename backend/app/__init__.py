@@ -5,7 +5,7 @@ class User:
     user_id: int
     name: str
     email: str
-    password_hash: hashlib._Hash # Not sure if this is the right data type.
+    password_hash: str
 
     def __init__(self, user_id: int, name: str, email: str, hash_value: str):
         self.user_id = user_id

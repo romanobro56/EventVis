@@ -71,3 +71,5 @@ export default defineConfig([
   },
 ])
 ```
+
+->npm install react-hot-toast
