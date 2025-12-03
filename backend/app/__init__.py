@@ -1,6 +1,3 @@
-##this can be blank for now
-##use this to define any module-wide constants
-from __future__ import annotations
 import hashlib
 
 # Define user classes from our JSON schemas:
@@ -10,9 +7,15 @@ class User:
     email: str
     password_hash: hashlib._Hash # Not sure if this is the right data type.
 
-    def __init__(this, user_id: int, name: str, email: str, hash_value):
-        this.user_id = user_id
-        this.name = name
-        this.email = email
-        this.password_hash = hash_value
+    def __init__(self, user_id: int, name: str, email: str, hash_value: str):
+        self.user_id = user_id
+        self.name = name
+        self.email = email
+        self.password_hash = hash_value
 
+    # This might be redundant, but I have this alternate implementation just in case.
+    def __init__(self, user_id: int, name: str, email: str, password: str):
+        self.user_id = user_id
+        self.name = name
+        self.email = email
+        self.password_hash = hashlib.sha3_256(password.encode()).hexdigest()
