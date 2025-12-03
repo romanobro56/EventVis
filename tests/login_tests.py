@@ -16,3 +16,8 @@ class LoginTestSuite(unittest.TestCase):
 
     def test_login_success_after_account_creation(self):
         pass
+
+    def test_successful_logout(self):
+        pass
+
+    
