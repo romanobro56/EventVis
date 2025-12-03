@@ -1,19 +1,15 @@
-
-import bson
 import json
+import os
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import ConnectionFailure
-
-import os
 
 #set your MongoDB username and password to these environment variables
 """username = os.environ.get('USRNM')
 password = os.environ.get('PASS')"""
 username = "jtaank_db_user"
 password = "J1sm1ne31"
-
 
 
 #generate the connection string

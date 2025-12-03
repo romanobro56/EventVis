@@ -1,4 +1,6 @@
 # === Python ===
+venv/
+backend/venv/
 .env
 *.pyc
 __pycache__/
@@ -47,3 +49,6 @@ yarn-error.log*
 # === System-unique files ===
 backend/app/unique_keys.py
 playground-1.mongodb.js
+
+# development-only seed script
+seed_events.py
