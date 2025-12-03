@@ -8,8 +8,8 @@ from pymongo.errors import ConnectionFailure
 #set your MongoDB username and password to these environment variables
 """username = os.environ.get('USRNM')
 password = os.environ.get('PASS')"""
-username = "jtaank_db_user"
-password = "J1sm1ne31"
+username = "[REDACTED]"
+password = "[REDACTED]"
 
 
 #generate the connection string
