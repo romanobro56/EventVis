@@ -5,12 +5,15 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import ConnectionFailure
 
-#set your MongoDB username and password to these environment variables
-"""username = os.environ.get('USRNM')
-password = os.environ.get('PASS')"""
-username = "[REDACTED]"
-password = "[REDACTED]"
+from dotenv import load_dotenv
 
+load_dotenv()
+
+username = os.getenv('USRNM')
+password = os.getenv('PASS')
+
+# print(username)
+# print(password)
 
 #generate the connection string
 uri = f"mongodb+srv://{username}:{password}@eventviscluster.dpmc4qx.mongodb.net/?appName=EventVisCluster"

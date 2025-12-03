@@ -1,7 +1,4 @@
 # === Python ===
-venv/
-backend/venv/
-.env
 *.pyc
 __pycache__/
 *.pyo
@@ -9,6 +6,8 @@ __pycache__/
 *.sqlite3
 
 # Virtual environment folders (common names)
+venv/
+backend/venv/
 env/
 .venv/
 ENV/
