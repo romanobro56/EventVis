@@ -9,7 +9,10 @@ from dotenv import load_dotenv
 
 from scraping import scrape_campus_pulse
 from scraping import scrape_umass_events
+load_dotenv()
 
+username = os.getenv('USRNM')
+password = os.getenv('PASS')
 
 load_dotenv()
 
