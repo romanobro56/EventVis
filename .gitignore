@@ -1,19 +1,53 @@
-# Python cache
+# === Python ===
+*.pyc
 __pycache__/
+*.pyo
+*.pyd
+*.sqlite3
 
-# Virtual environment
+# Virtual environment folders (common names)
+venv/
+backend/venv/
+env/
 .venv/
+ENV/
+env.bak/
+venv/
 
-# Environment Variables
+# Jupyter
+.ipynb_checkpoints/
+
+# === Node / JavaScript ===
+node_modules/
+dist/
+build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === macOS ===
+.DS_Store
+
+# === VSCode ===
+.vscode/
+
+# === Logs ===
+*.log
+
+# === Local environment files ===
+*.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+.env
+*.env
+.env.*
+
+# === System-unique files ===
 backend/app/unique_keys.py
-backend/.env
-db/.env
-
-# MongoDB Playgrounds
 playground-1.mongodb.js
 
-# Node Modules
-node_modules/
-
-# Package Locks
-frontend/package-lock.json
+# development-only seed script
+seed_events.py
