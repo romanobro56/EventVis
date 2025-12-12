@@ -10,8 +10,20 @@ sampleUser1 = {
 
 class LoginTestSuite(unittest.TestCase):
     user = None
+    mockoDB_client = Mock(spec=MongoClient)
+    mockoDB_client
+
+    def setup(self):
+        client = mongomock.MongoClient()
+        database = client.__getattr__('event_vis')
+        allUsers = database['users']
+        allEvents = database['events']
+        print(allUsers, allEvents)
+    
 
     def test_duplicate_emails(self):
+        # Assume we get the user-submitted input data from the front-end.
+        
         pass # TODO
 
     def test_login_success_after_account_creation(self):
@@ -20,4 +32,8 @@ class LoginTestSuite(unittest.TestCase):
     def test_successful_logout(self):
         pass
 
-    
+    def test_failed_login_after_wrong_password(self):
+        pass
+
+def main():
+    lts = LoginTestSuite()
