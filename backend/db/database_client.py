@@ -7,6 +7,13 @@ from pymongo.errors import ConnectionFailure
 
 from dotenv import load_dotenv
 
+from scraping import scrape_campus_pulse
+from scraping import scrape_umass_events
+load_dotenv()
+
+username = os.getenv('USRNM')
+password = os.getenv('PASS')
+
 load_dotenv()
 
 username = os.getenv('USRNM')
@@ -34,9 +41,17 @@ def create_user(user: str):
     return
 
 def update_events_campus_pulse():
+    events = scrape_campus_pulse()
+    for event in events:
+        event_dict = json.loads(event)
+        event_collection.insert_one(event_dict)
     return
 
 def update_events_calendar():
+    events = scrape_umass_events()
+    for event in events:
+        event_dict = json.loads(event)
+        event_collection.insert_one(event_dict)
     return
 
 def create_new_event(event: str):
