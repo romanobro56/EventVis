@@ -33,6 +33,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 from pathlib import Path
 from pydantic import BaseModel
+from ...db.database_client import * # This may require changing a Python path.
 from datetime import datetime
 import hashlib
 import secrets
@@ -55,6 +56,11 @@ origins = [
     "localhost:5173",
 ]
 
+load_dotenv()
+
+# Get a Clerk API key for the authentication part.
+clerk = Clerk(bearer_auth=os.getenv("CLERK_SECRET_KEY"))
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -70,6 +76,17 @@ def hash_password(password: str) -> str:
 def create_session_token() -> str:
     return secrets.token_hex(32)
 
+def create_account(user_id, name, email, hashValue) # Check the parameters from a previous commit...
+    # Create the user object prematurely, and convert it to JSON.
+    user_object = User(user_id, name, email, hashValue)
+    user_json = JSONResponse(content=jsonable_encoder(user_object))
+
+    # Send the data to MongoDB via the API calls.
+    create_user(str(user_json)) # could be email or name
+
+    # Return (if needed)
+    return user_object
+    
 def find_user_by_email(email: str):
     return users_col.find_one({"email": email})
 
@@ -203,6 +220,10 @@ DUMMY_EVENT = DUMMY_EVENTS[0]
 # --- Event endpoints ---
 @app.post("/events")
 def create_event(event: Event):
+    # MongoDB API call to make a new event in the database
+    create_new_event(str(JSONResponse(content=jsonable_encoder(event))))
+
+    # returns id of created event (We have not set up event ID disambiguation yet.)
     return 0
 
 @app.put("/events/{event_id}")
@@ -211,6 +232,9 @@ def edit_event(event_id: int, new_event: Event):
 
 @app.put("/events/{event_id}/cancel")
 def cancel_event(event_id: int):
+    # Delete the event instead of marking it as cancelled. (We'll do this due to time constraints.)
+    event = get_event(event_id)
+    delete_event(str(JSONResponse(content=jsonable_encoder(event))))
     return
 
 @app.get("/events/{event_id}")
@@ -231,6 +255,10 @@ def comment_on_event(event_id: int, comment_text: str):
 
 @app.get("/events")
 def search_for_events(search_text: str):
+    # I'm assuming this uses `get_events()`.
+    allEvents_json = get_events(search_text)
+    allEvents_dict = json.loads(allEvents_json)
+    # Analyze these variables during testing to determine what to do next.
     return DUMMY_EVENTS
 
 @app.get("/settings/")

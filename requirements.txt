@@ -4,6 +4,7 @@ pymongo
 requests 
 beautifulsoup4
 feedparser
-
+mock
 clerk-backend-api
 python-dotenv
+mongomock
