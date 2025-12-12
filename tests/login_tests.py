@@ -23,7 +23,7 @@ class LoginTestSuite(unittest.TestCase):
 
     def test_duplicate_emails(self):
         # Assume we get the user-submitted input data from the front-end.
-        
+        self.fail("Testing...")
         pass # TODO
 
     def test_login_success_after_account_creation(self):
