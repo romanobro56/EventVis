@@ -1,26 +1,32 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { requestSignUp } from "../api";
 
 export default function Signup({ setUser }) {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
   
     try {
-      const res = await fetch("http://localhost:8000/users/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-  
+      const res = await requestSignUp(formData.name, formData.email, formData.password);
       const data = await res.json();
-  
+
       if (!res.ok) {
         setError(data.detail || "Signup failed");
         return;
@@ -60,9 +66,10 @@ export default function Signup({ setUser }) {
           <label className="block text-gray-700 font-medium">Name</label>
           <input
             type="text"
+            name="name"
             className="w-full p-2 border rounded mt-1"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formData.name}
+            onChange={handleChange}
             required
           />
         </div>
@@ -71,9 +78,10 @@ export default function Signup({ setUser }) {
           <label className="block text-gray-700 font-medium">Email</label>
           <input
             type="email"
+            name="email"
             className="w-full p-2 border rounded mt-1"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
             required
           />
         </div>
@@ -82,9 +90,10 @@ export default function Signup({ setUser }) {
           <label className="block text-gray-700 font-medium">Password</label>
           <input
             type="password"
+            name="password"
             className="w-full p-2 border rounded mt-1"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
             required
           />
         </div>
