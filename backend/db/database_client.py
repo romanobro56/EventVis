@@ -7,8 +7,8 @@ from pymongo.errors import ConnectionFailure
 
 from dotenv import load_dotenv
 
-from scraping.campus_pulse_scraping import scrape_campus_pulse
-from scraping.events_calendar_scraping import scrape_umass_events
+from .scraping.campus_pulse_scraping import scrape_campus_pulse
+from .scraping.events_calendar_scraping import scrape_umass_events
 
 load_dotenv()
 
