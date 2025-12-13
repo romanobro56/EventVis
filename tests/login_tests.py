@@ -1,4 +1,19 @@
-from __init__ import *
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from typing import Collection
+import unittest 
+import sys, os
+from backend.app import User
+from unittest.mock import Mock, patch
+import mongomock
+import json
+sys.path.append("../backend/db")
+sys.path.append("./backend/apps/routers")
+sys.path.append("./backend/db")
+# from backend.db.database_client import *
+import backend.db.database_client as bddc
+from backend.app.models.user_models import SignupRequest, LoginRequest
+from backend.app.routers.users import signup
 
 # Sample user data to test
 sampleUser1 = {
@@ -6,23 +21,36 @@ sampleUser1 = {
     "email": "noelle123@example.com",
     "password": "holidays"
 }
-# I don't think we've decided on user ID assignment yet.
+
+sampleUser2 = SignupRequest(name="Noelle", password="holidays", email="noelle123@example.com")
 
 class LoginTestSuite(unittest.TestCase):
     user = None
-    mockoDB_client = Mock(spec=MongoClient)
+    mockoDB_client = Mock(spec=bddc.MongoClient)
     mockoDB_client
+    client = None 
+    database = None
+    allUsers = None
+    allEvents = None
 
+    # TODO: Figure out how to make this portable to other testing files.
     def setup(self):
-        client = mongomock.MongoClient()
-        database = client.__getattr__('event_vis')
-        allUsers = database['users']
-        allEvents = database['events']
-        print(allUsers, allEvents)
+        self.client = mongomock.MongoClient()
+        self.database = self.client.__getattr__('event_vis')
+        self.allUsers = self.database['users']
+        self.allEvents = self.database['events']
     
-
-    def test_duplicate_emails(self):
+    @patch("backend.app.routers.users.signup")
+    def test_duplicate_emails(self, signup_mock):
         # Assume we get the user-submitted input data from the front-end.
+        self.setup()
+
+        signup_mock.side_effect = 3
+        
+        user_json = json.dumps(sampleUser1)
+        backend.app.routers.users.signup(sampleUser2)
+        print(backend.app.routers.users.signup(sampleUser2))
+        self.assertEqual(1, self.allUsers.count_documents({}), "Only 1 user was supposed to be created.")
         
         pass # TODO
 
