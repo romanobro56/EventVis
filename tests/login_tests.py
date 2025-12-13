@@ -1,3 +1,8 @@
+import sys
+
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+sys.path.append("./tests")
 from __init__ import *
 
 # Sample user data to test
@@ -12,18 +17,30 @@ class LoginTestSuite(unittest.TestCase):
     user = None
     mockoDB_client = Mock(spec=MongoClient)
     mockoDB_client
+    client = None 
+    database = None
+    allUsers = None
+    allEvents = None
 
+
+    # TODO: Figure out how to make this portable to other testing files.
     def setup(self):
-        client = mongomock.MongoClient()
-        database = client.__getattr__('event_vis')
-        allUsers = database['users']
-        allEvents = database['events']
-        print(allUsers, allEvents)
+        self.client = mongomock.MongoClient()
+        self.database = self.client.__getattr__('event_vis')
+        self.allUsers = self.database['users']
+        self.allEvents = self.database['events']
     
 
     def test_duplicate_emails(self):
         # Assume we get the user-submitted input data from the front-end.
-        self.fail("Testing...")
+        self.setup()
+        user_json = json.dumps(sampleUser1)
+        print(user_json)
+        create_user(user_json)
+        create_user(str(sampleUser1))
+        # create_user(str(JSONResponse(content=jsonable_encoder(obj=sampleUser1))))
+        self.assertEqual(1, self.allUsers.count_documents(), "Only 1 user was created.")
+        
         pass # TODO
 
     def test_login_success_after_account_creation(self):

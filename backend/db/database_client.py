@@ -37,7 +37,7 @@ event_collection = db['events']
 
 #need to add validation to these, but they work for now!
 def create_user(user: str):
-    user_dict = json.loads(str)
+    user_dict = json.loads(user)
     user_collection.insert_one(user_dict)
     return
 
