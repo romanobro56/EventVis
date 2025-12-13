@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 sys.path.append("./tests")
 from __init__ import *
+import backend.app.routers.users 
 
 # Sample user data to test
 sampleUser1 = {
@@ -11,6 +12,8 @@ sampleUser1 = {
     "email": "noelle123@example.com",
     "password": "holidays"
 }
+
+sampleUser2 = backend.app.routers.users.SignupRequest(None, name="Noelle", password="holidays", email="noelle123@example.com")
 # I don't think we've decided on user ID assignment yet.
 
 class LoginTestSuite(unittest.TestCase):
@@ -22,7 +25,6 @@ class LoginTestSuite(unittest.TestCase):
     allUsers = None
     allEvents = None
 
-
     # TODO: Figure out how to make this portable to other testing files.
     def setup(self):
         self.client = mongomock.MongoClient()
@@ -30,16 +32,17 @@ class LoginTestSuite(unittest.TestCase):
         self.allUsers = self.database['users']
         self.allEvents = self.database['events']
     
-
-    def test_duplicate_emails(self):
+    @patch("backend.app.routers.users.signup")
+    def test_duplicate_emails(self, signup_mock):
         # Assume we get the user-submitted input data from the front-end.
         self.setup()
+
+        signup_mock.side_effect = 3
+        
         user_json = json.dumps(sampleUser1)
-        print(user_json)
-        create_user(user_json)
-        create_user(str(sampleUser1))
-        # create_user(str(JSONResponse(content=jsonable_encoder(obj=sampleUser1))))
-        self.assertEqual(1, self.allUsers.count_documents(), "Only 1 user was created.")
+        backend.app.routers.users.signup(sampleUser2)
+        print(backend.app.routers.users.signup(sampleUser2))
+        self.assertEqual(1, self.allUsers.count_documents({}), "Only 1 user was supposed to be created.")
         
         pass # TODO
 

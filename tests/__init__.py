@@ -7,6 +7,6 @@ sys.path.append(os.path.abspath('../backend'))
 from backend.app import User
 from backend.db.database_client import *
 
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 import mongomock
 import json
