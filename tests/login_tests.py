@@ -1,10 +1,19 @@
-import sys
-
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-sys.path.append("./tests")
-from __init__ import *
-import backend.app.routers.users 
+from typing import Collection
+import unittest 
+import sys, os
+from backend.app import User
+from unittest.mock import Mock, patch
+import mongomock
+import json
+sys.path.append("../backend/db")
+sys.path.append("./backend/apps/routers")
+sys.path.append("./backend/db")
+# from backend.db.database_client import *
+import backend.db.database_client as bddc
+from backend.app.models.user_models import SignupRequest, LoginRequest
+from backend.app.routers.users import signup
 
 # Sample user data to test
 sampleUser1 = {
@@ -13,12 +22,11 @@ sampleUser1 = {
     "password": "holidays"
 }
 
-sampleUser2 = backend.app.routers.users.SignupRequest(None, name="Noelle", password="holidays", email="noelle123@example.com")
-# I don't think we've decided on user ID assignment yet.
+sampleUser2 = SignupRequest(name="Noelle", password="holidays", email="noelle123@example.com")
 
 class LoginTestSuite(unittest.TestCase):
     user = None
-    mockoDB_client = Mock(spec=MongoClient)
+    mockoDB_client = Mock(spec=bddc.MongoClient)
     mockoDB_client
     client = None 
     database = None
