@@ -22,6 +22,7 @@ export default function Header({ user, setUser }) {
         {/* Main navigation links */}
         {location.pathname !== "/" && <Link to="/">Home</Link>}
         {location.pathname !== "/map" && <Link to="/map">Map</Link>}
+        {location.pathname !== "/create" && <Link to="/create">Create Event</Link>}
 
         {/* NOT LOGGED IN → Show Login (but not on login page itself) */}
         {!user && location.pathname !== "/account" && (

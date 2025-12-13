@@ -15,11 +15,6 @@ load_dotenv()
 username = os.getenv('USRNM')
 password = os.getenv('PASS')
 
-load_dotenv()
-
-username = os.getenv('USRNM')
-password = os.getenv('PASS')
-
 # print(username)
 # print(password)
 
